@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shimmer/shimmer.dart';
-import '../utils/user_session.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:lottie/lottie.dart';
 import 'dart:convert';
+import '../utils/user_session.dart';
+import '../helper/top_snackbar.dart';
 
 class SalaryScreen extends StatefulWidget {
   const SalaryScreen({super.key});
@@ -60,48 +62,29 @@ class _SalaryScreenState extends State<SalaryScreen> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body)['data_packet'];
 
-        setState(() {
-        salaryData = Map<String, String?>.from(data);
-        isLoading = false;
-      });
+        print("data of salary,$data");
+
+          setState(() {
+          if (data == null) {
+            salaryData = {};
+          } else if (data is Map && data.isNotEmpty) {
+            salaryData = Map<String, String?>.from(data);
+          } else if (data is List && data.isNotEmpty && data.first is Map) {
+            salaryData = Map<String, String?>.from(data.first);
+          } else {
+            salaryData = {};
+          }
+          isLoading = false;
+        });
 
       } else {
         final errorData = json.decode(response.body);
         String errorMessage = errorData['message'] ?? 'An error occurred';
-        _showCustomSnackBar(context, errorMessage, Colors.red, Icons.error);
+        showCustomSnackBar(context, errorMessage, Colors.red, Icons.error);
       }
     } catch (e) {
-      _showCustomSnackBar(context, e.toString(), Colors.red, Icons.error);
+      showCustomSnackBar(context, e.toString(), Colors.red, Icons.error);
     }
-  }
-
-  void _showCustomSnackBar(
-      BuildContext context, String message, Color color, IconData icon) {
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
-
-    scaffoldMessenger.clearSnackBars();
-
-    final snackBar = SnackBar(
-      content: Row(
-        children: [
-          Icon(icon, color: Colors.white),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              message,
-              style: const TextStyle(color: Colors.white, fontSize: 16),
-            ),
-          ),
-        ],
-      ),
-      backgroundColor: color,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      margin: const EdgeInsets.all(16),
-      duration: const Duration(seconds: 3),
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
 Widget _buildShimmer() {
@@ -126,7 +109,29 @@ Widget _buildShimmer() {
   }
 
   Widget _buildHeaderCard() {
-  if (salaryData.isEmpty) return const SizedBox();
+  if (salaryData.isEmpty) {
+    return SizedBox.expand(
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,  
+          children: [
+            Lottie.asset(
+              'assets/image/Animation.json',
+              width: 220,
+              repeat: true,
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              "No Salary found !",
+              style: TextStyle(fontSize: 16),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   return Card(
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     elevation: 4,
@@ -153,9 +158,12 @@ Widget _buildShimmer() {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _summaryItem("Gross Pay", salaryData["Gross Pay"],FontAwesomeIcons.indianRupeeSign),
-              _summaryItem("Net Pay", salaryData["Net Pay"], FontAwesomeIcons.handHoldingDollar),
-              _summaryItem("CTC", salaryData["Monthly CTC"], FontAwesomeIcons.coins),
+              _summaryItem("Gross Pay", salaryData["Gross Pay"],
+                  FontAwesomeIcons.indianRupeeSign),
+              _summaryItem("Net Pay", salaryData["Net Pay"],
+                  FontAwesomeIcons.handHoldingDollar),
+              _summaryItem("CTC", salaryData["Monthly CTC"],
+                  FontAwesomeIcons.coins),
             ],
           )
         ],
@@ -231,17 +239,21 @@ Widget _buildSalaryList() {
     child: CustomScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
       slivers: [
-        SliverToBoxAdapter(child: _buildHeaderCard()),
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) {
-              final entry = entries[index];
-              return _buildSalaryCard(entry.key, entry.value,
-                  isAlternate: index % 2 == 0);
-            },
-            childCount: entries.length,
+        if (salaryData.isEmpty)
+          SliverFillRemaining(child: _buildHeaderCard())
+        else ...[
+          SliverToBoxAdapter(child: _buildHeaderCard()),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final entry = entries[index];
+                return _buildSalaryCard(entry.key, entry.value,
+                    isAlternate: index % 2 == 0);
+              },
+              childCount: entries.length,
+            ),
           ),
-        ),
+        ],
       ],
     ),
   );
@@ -250,8 +262,8 @@ Widget _buildSalaryList() {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-            backgroundColor: Theme.of(context).brightness == Brightness.light
-        ? Colors.grey.shade100
+       backgroundColor: Theme.of(context).brightness == Brightness.light
+        ? Color(0xFFF2F5F8)
         : Color(0xFF121212),
       body: SafeArea(
         child: isLoading ? _buildShimmer() : _buildSalaryList(),

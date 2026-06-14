@@ -8,6 +8,7 @@ import '../utils/user_session.dart';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:lottie/lottie.dart';
+import '../helper/top_snackbar.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
 
@@ -66,43 +67,11 @@ class _LetterScreenState extends State<LetterScreen> {
         });
     }    
   } catch (e) {
-    _showCustomSnackBar(context, e.toString(), Colors.red, Icons.error);
+    showCustomSnackBar(context, e.toString(), Colors.red, Icons.error);
        setState(() => isLoading = false);
   }
  }
 
- void _showCustomSnackBar(
-    BuildContext context,
-    String message,
-    Color color,
-    IconData icon,
-  ) {
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
-
-    scaffoldMessenger.clearSnackBars();
-
-    final snackBar = SnackBar(
-      content: Row(
-        children: [
-          Icon(icon, color: Colors.white),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              message,
-              style: const TextStyle(color: Colors.white, fontSize: 16),
-            ),
-          ),
-        ],
-      ),
-      backgroundColor: color,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      margin: const EdgeInsets.all(16),
-      duration: const Duration(seconds: 3),
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
 
   Widget _buildShimmerTile() {
     return Shimmer.fromColors(
@@ -179,7 +148,7 @@ Widget _buildDocumentCard(Map<String, dynamic> letter) {
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    // color: Colors.black87,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -188,7 +157,7 @@ Widget _buildDocumentCard(Map<String, dynamic> letter) {
                   "Uploaded on: $formattedDate",
                   style: TextStyle(
                     fontSize: 13,
-                    color: Colors.black54,
+                    // color: Colors.black54,
                   ),
                 ),
               ],
@@ -243,8 +212,8 @@ Widget _buildDocumentCard(Map<String, dynamic> letter) {
                     children: [
                     Lottie.asset('assets/image/Animation.json', width: 220, repeat: false),
                     Text(
-                      "No documents found",
-                      style: TextStyle(fontSize: 16, color: Colors.black54),
+                      "No documents found !",
+                      style: TextStyle(fontSize: 16),
                     ),
                   ],
                 ),

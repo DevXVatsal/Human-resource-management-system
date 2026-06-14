@@ -394,7 +394,7 @@ Widget build(BuildContext context) {
                     BarChartRodData(
                       toY: totalOT,
                       gradient: const LinearGradient(
-                        colors: [Colors.orange, Colors.deepOrangeAccent],
+                        colors: [Colors.deepOrange, Colors.orange],
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
                       ),

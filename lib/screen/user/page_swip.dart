@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_3/screen/user/account_screen.dart';
-import 'package:flutter_application_3/screen/user/document_screen.dart';
-import 'package:flutter_application_3/screen/user/letter_screen.dart';
-import 'package:flutter_application_3/screen/user/salary_screen.dart';
+import './account_screen.dart';
+import './document_screen.dart';
+import './letter_screen.dart';
+import './salary_screen.dart';
 import './user_info_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -91,6 +91,7 @@ final Map<String, IconData> sectionIcons = {
           child: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
+            forceMaterialTransparency: true,
             centerTitle: false,
             title: PopupMenuButton<String>(
               color: Theme.of(context).scaffoldBackgroundColor,
@@ -149,10 +150,8 @@ final Map<String, IconData> sectionIcons = {
                       key: ValueKey(_currentIndex),
                       style: TextStyle(
                         fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: _currentIndex == 0
-                            ? Colors.blue.shade800
-                            : Theme.of(context).iconTheme.color,
+                        fontWeight: FontWeight.w900,
+                        color: Theme.of(context).iconTheme.color,
                       ),
                     ),
                   ),

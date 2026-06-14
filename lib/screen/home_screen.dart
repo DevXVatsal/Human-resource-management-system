@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage>  {
   final grey300 = Colors.grey.shade300;
 
   final ScrollController _scrollController = ScrollController();
-  bool _isBottomBarVisible = true;
+  // bool _isBottomBarVisible = true;
 
 
   @override
@@ -79,14 +79,14 @@ void initState() {
   attendanceOutPage = const AttendanceScreenOut();
   _loadVersion();
 
-  _scrollController.addListener(() {
-    final direction = _scrollController.position.userScrollDirection;
-    if (direction == ScrollDirection.reverse && _isBottomBarVisible) {
-      setState(() => _isBottomBarVisible = false);
-    } else if (direction == ScrollDirection.forward && !_isBottomBarVisible) {
-      setState(() => _isBottomBarVisible = true);
-    }
-  });
+  // _scrollController.addListener(() {
+  //   final direction = _scrollController.position.userScrollDirection;
+  //   if (direction == ScrollDirection.reverse && _isBottomBarVisible) {
+  //     setState(() => _isBottomBarVisible = false);
+  //   } else if (direction == ScrollDirection.forward && !_isBottomBarVisible) {
+  //     setState(() => _isBottomBarVisible = true);
+  //   }
+  // });
 }
 
 
@@ -900,111 +900,102 @@ Widget build(BuildContext context) {
 
   bottomNavigationBar: AnimatedContainer(
   duration: const Duration(milliseconds: 200),
-  height: _isBottomBarVisible ? kBottomNavigationBarHeight + 14 : 0,
-  child: Wrap(
-    children: [
-      SafeArea(
-        child: Padding(
-          padding: EdgeInsets.zero,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(5),
-                topRight: Radius.circular(5),
-              ),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 7.0),
-            child: GNav(
-              selectedIndex: _currentIndex,
-              onTabChange: (index) async {
-                if (_isNavigating) return;
+  height: kBottomNavigationBarHeight + 20 ,
+  child: Container(
+    color: Theme.of(context).brightness == Brightness.light 
+    ? Color(0xFFF2F5F8).withOpacity(0.8)
+    : Colors.black12.withOpacity(0.3),
+    child: SafeArea(
+      top: false,
+      bottom: false,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: GNav(
+          selectedIndex: _currentIndex,
+          onTabChange: (index) async {
+            if (_isNavigating) return;
+            setState(() => _currentIndex = index);
+            _isNavigating = true;
 
-                setState(() => _currentIndex = index);
-                _isNavigating = true;
-
-                try {
-                  switch (index) {
-                    case 0:
-                      await Navigator.push(
-                        context,
-                        PageRouteBuilder(
-                          transitionDuration: const Duration(milliseconds: 500),
-                          pageBuilder: (_, __, ___) => attendanceInPage,
-                          transitionsBuilder: (_, animation, __, child) {
-                            return SlideTransition(
-                              position: Tween<Offset>(
-                                begin: const Offset(1.0, 0.0),
-                                end: Offset.zero,
-                              ).animate(CurvedAnimation(
-                                parent: animation,
-                                curve: Curves.easeInOut,
-                              )),
-                              child: child,
-                            );
-                          },
-                        ),
-                      );
-                      break;
-
-                    case 1:
-                      if (ModalRoute.of(context)?.settings.name != '/home') {
-                        await Navigator.pushNamed(context, '/home');
-                      }
-                      break;
-
-                    case 2:
-                      await Navigator.push(
-                        context,
-                        PageRouteBuilder(
-                          transitionDuration: const Duration(milliseconds: 500),
-                          pageBuilder: (_, __, ___) => attendanceOutPage,
-                          transitionsBuilder: (_, animation, __, child) {
-                            return SlideTransition(
-                              position: Tween<Offset>(
-                                begin: const Offset(1.0, 0.0),
-                                end: Offset.zero,
-                              ).animate(CurvedAnimation(
-                                parent: animation,
-                                curve: Curves.easeInOut,
-                              )),
-                              child: child,
-                            );
-                          },
-                        ),
-                      );
-                      break;
+            try {
+              switch (index) {
+                case 0:
+                  await Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      transitionDuration: const Duration(milliseconds: 500),
+                      pageBuilder: (_, __, ___) => attendanceInPage,
+                      transitionsBuilder: (_, animation, __, child) {
+                        return SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(1.0, 0.0),
+                            end: Offset.zero,
+                          ).animate(CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.easeInOut,
+                          )),
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
+                  break;
+                case 1:
+                  if (ModalRoute.of(context)?.settings.name != '/home') {
+                    await Navigator.pushNamed(context, '/home');
                   }
-                  await Future.delayed(const Duration(milliseconds: 100));
-                  setState(() => _currentIndex = 1);
-                } finally {
-                  _isNavigating = false;
-                }
-              },
-              backgroundColor: Colors.transparent,
-              haptic: true,
-              tabBackgroundColor: Theme.of(context)
-              .colorScheme
-              .primary
-              .withOpacity(0.1), 
-              activeColor: Theme.of(context).colorScheme.primary,
-              color: Theme.of(context).iconTheme.color,
-              gap: 10,
-              duration: const Duration(milliseconds: 900),
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-              tabs: const [
-                GButton(icon: Icons.punch_clock_outlined, text: 'In'),
-                GButton(icon: Icons.home_outlined, text: 'Home'),
-                GButton(icon: Icons.lock_clock_outlined, text: 'Out'),
-              ],
-            ),
-          ),
+                  break;
+                case 2:
+                  await Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      transitionDuration: const Duration(milliseconds: 500),
+                      pageBuilder: (_, __, ___) => attendanceOutPage,
+                      transitionsBuilder: (_, animation, __, child) {
+                        return SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(1.0, 0.0),
+                            end: Offset.zero,
+                          ).animate(CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.easeInOut,
+                          )),
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
+                  break;
+              }
+              await Future.delayed(const Duration(milliseconds: 100));
+              setState(() => _currentIndex = 1);
+            } finally {
+              _isNavigating = false;
+            }
+          },
+          backgroundColor: Colors.transparent,
+          haptic: true,
+          tabBackgroundColor: Theme.of(context).brightness == Brightness.light 
+          ?  Colors.blue.shade100
+              .withOpacity(0.8)
+          : Colors.grey.shade900,
+          activeColor: Theme.of(context).brightness == Brightness.light 
+          ? Colors.blue.shade300
+          : Colors.grey.shade600,
+          color: Theme.of(context).iconTheme.color,
+          gap: 8,
+          duration: const Duration(milliseconds: 300),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+          tabs: const [
+            GButton(icon: Icons.punch_clock_outlined, text: 'In'),
+            GButton(icon: Icons.home_outlined, text: 'Home'),
+            GButton(icon: Icons.lock_clock_outlined, text: 'Out'),
+          ],
         ),
       ),
-    ],
+    ),
   ),
-),
-
+)
   
 // bottomNavigationBar: SafeArea(
 //   maintainBottomViewPadding: true,
@@ -1808,12 +1799,12 @@ Widget buildLegendItem(Color color, String label) {
           ),
 
           Padding(
-          padding: const EdgeInsets.only(bottom: 25.0, left: 16.0, right: 16.0),
+          padding: const EdgeInsets.only(bottom: 25.0, left: 25.0, right: 16.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: Icon(Icons.settings, size: 20, color: Colors.black54),
+                leading: Icon(Icons.settings, size: 21),
                 title: Text(
                   "Settings",
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
